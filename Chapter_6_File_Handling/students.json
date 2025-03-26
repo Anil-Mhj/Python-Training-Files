@@ -1,0 +1,26 @@
+[
+    {
+        "student_id": "5002",
+        "name": "Nate",
+        "address": "123 street",
+        "phone_no": "123-000-1",
+        "interest": "ai/ml",
+        "iq_score": 130
+    },
+    {
+        "student_id": "5003",
+        "name": "Alex",
+        "address": "Baker Street",
+        "phone_no": "123-4567",
+        "interest": "web dev",
+        "iq_score": 97
+    },
+    {
+        "student_id": "5004",
+        "name": "Smith",
+        "address": "Maple Ave",
+        "phone_no": "555-0900",
+        "interest": "mobile dev",
+        "iq_score": 91
+    }
+]
