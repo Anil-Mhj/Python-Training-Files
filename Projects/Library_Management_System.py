@@ -1,64 +1,62 @@
-class Library:
-    def __init__(self):
-        """Initialize the library with an empty book list."""
-        self.books = []  # List to store books as dictionaries
+import json
+import streamlit as st
 
-    def display_books(self):
-        """Displays all available books in the library."""
-        if not self.books:
-            print("\nNo books available in the library.")
-        else:
-            print("\nAvailable Books:")
-            for index, book in enumerate(self.books, start=1):
-                print(f"{index}. {book['name']} by {book['author']}")
+FILENAME = "books.json"
 
-    def add_book(self):
-        """Adds a new book to the library."""
-        book_name = input("Enter book name: ")
-        author_name = input("Enter author name: ")
-        self.books.append({"name": book_name, "author": author_name})
-        print(f"Book '{book_name}' by {author_name} added successfully!")
-
-    def remove_book(self):
-        """Removes a book from the library."""
-        self.display_books()
-        try:
-            book_index = int(input("Enter book number to remove: ")) - 1
-            if 0 <= book_index < len(self.books):
-                removed_book = self.books.pop(book_index)
-                print(
-                    f"Book '{removed_book['name']}' by {removed_book['author']} removed successfully!"
-                )
+def load_books():
+    """Loads books from the JSON file."""
+    try:
+        with open(FILENAME, "r") as file:
+            books = json.load(file)
+            if isinstance(books, list):
+                return books
             else:
-                print("Invalid book number.")
-        except ValueError:
-            print("Please enter a valid number.")
+                return []
+    except (FileNotFoundError, json.JSONDecodeError):
+        return []
 
+def save_books(books):
+    """Saves the books list to the JSON file."""
+    with open(FILENAME, "w") as file:
+        json.dump(books, file, indent=4)
 
 def main():
-    """Main function to run the library management system."""
-    library = Library()
-    while True:
-        print("\nLibrary Management System:")
-        print("1) Display Books")
-        print("2) Add Book")
-        print("3) Remove Book")
-        print("4) Exit")
+    st.title("📚 Library Management System")
+    books = load_books()
+    
+    menu = ["Display Books", "Add Book", "Remove Book"]
+    choice = st.sidebar.selectbox("Menu", menu)
 
-        choice = input("Enter your choice: ")
-
-        if choice == "1":
-            library.display_books()
-        elif choice == "2":
-            library.add_book()
-        elif choice == "3":
-            library.remove_book()
-        elif choice == "4":
-            print("Goodbye!")
-            break
+    if choice == "Display Books":
+        st.subheader("Available Books")
+        if not books:
+            st.write("No books available in the library.")
         else:
-            print("Invalid choice. Please try again.")
+            for index, book in enumerate(books, start=1):
+                st.write(f"{index}. **{book['name']}** by {book['author']}")
 
+    elif choice == "Add Book":
+        st.subheader("Add a New Book")
+        book_name = st.text_input("Enter book name")
+        author_name = st.text_input("Enter author name")
+        if st.button("Add Book"):
+            books.append({"name": book_name, "author": author_name})
+            save_books(books)
+            st.success(f"Book '{book_name}' by {author_name} added successfully!")
+            st.rerun()
+
+    elif choice == "Remove Book":
+        st.subheader("Remove a Book")
+        if not books:
+            st.write("No books available to remove.")
+        else:
+            book_list = [f"{book['name']} by {book['author']}" for book in books]
+            book_to_remove = st.selectbox("Select a book to remove", book_list)
+            if st.button("Remove Book"):
+                books = [book for book in books if f"{book['name']} by {book['author']}" != book_to_remove]
+                save_books(books)
+                st.success("Book removed successfully!")
+                st.rerun()
 
 if __name__ == "__main__":
     main()

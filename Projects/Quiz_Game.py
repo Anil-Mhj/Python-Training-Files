@@ -1,72 +1,80 @@
-def quiz_game():
-    questions = [
-        "What is the capital of France?",
-        "Which planet is known as the Red Planet?",
-        "What is 5 + 7?",
-        "Who wrote 'To Kill a Mockingbird'?",
-        "What is the chemical symbol for gold?",
-        "What is the largest ocean on Earth?",
-        "Who painted the Mona Lisa?",
-        "What is the square root of 64?",
-        "Which is the longest river in the world?",
-        "What is the national animal of China?",
-    ]
+import streamlit as st
+import random
 
-    choices = [
-        ["A) Paris", "B) London", "C) Rome", "D) Berlin"],
-        ["A) Earth", "B) Mars", "C) Jupiter", "D) Venus"],
-        ["A) 10", "B) 11", "C) 12", "D) 13"],
-        ["A) J.K. Rowling", "B) Harper Lee", "C) Mark Twain", "D) Jane Austen"],
-        ["A) Au", "B) Ag", "C) Pb", "D) Fe"],
-        ["A) Atlantic Ocean", "B) Indian Ocean", "C) Arctic Ocean", "D) Pacific Ocean"],
-        [
-            "A) Vincent van Gogh",
-            "B) Pablo Picasso",
-            "C) Leonardo da Vinci",
-            "D) Claude Monet",
-        ],
-        ["A) 6", "B) 7", "C) 8", "D) 9"],
-        [
-            "A) Amazon River",
-            "B) Nile River",
-            "C) Yangtze River",
-            "D) Mississippi River",
-        ],
-        ["A) Tiger", "B) Panda", "C) Elephant", "D) Kangaroo"],
-    ]
+questions = [
+    "What is the capital of France?",
+    "Which planet is known as the Red Planet?",
+    "What is 5 + 7?",
+    "Who wrote 'To Kill a Mockingbird'?",
+    "What is the chemical symbol for gold?",
+    "What is the largest ocean on Earth?",
+    "Who painted the Mona Lisa?",
+    "What is the square root of 64?",
+    "Which is the longest river in the world?",
+    "What is the national animal of China?",
+]
 
-    answers = ["A", "B", "C", "B", "A", "D", "C", "C", "B", "B"]
+choices = [
+    ["Paris", "London", "Rome", "Berlin"],
+    ["Earth", "Mars", "Jupiter", "Venus"],
+    ["10", "11", "12", "13"],
+    ["J.K. Rowling", "Harper Lee", "Mark Twain", "Jane Austen"],
+    ["Au", "Ag", "Pb", "Fe"],
+    ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+    ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"],
+    ["6", "7", "8", "9"],
+    ["Amazon River", "Nile River", "Yangtze River", "Mississippi River"],
+    ["Tiger", "Panda", "Elephant", "Kangaroo"],
+]
 
-    score = 0
-
-    for i in range(len(questions)):
-        print(f"\{i + 1}: {questions[i]}")
-        for choice in choices[i]:
-            print(choice)
-
-        user_answer = input("Enter your answer (A, B, C, or D): ").strip().upper()
-
-        if user_answer == answers[i]:
-            print("Correct!")
-            score += 1
-        else:
-            print(f"Wrong! The correct answer was {answers[i]}.")
-
-    print(f"\nGame Over! Your final score is {score}/{len(questions)}")
+answers = [
+    "Paris",
+    "Mars",
+    "12",
+    "Harper Lee",
+    "Au",
+    "Pacific Ocean",
+    "Leonardo da Vinci",
+    "8",
+    "Nile River",
+    "Panda",
+]
 
 
 def main():
-    print("\nWelcome to the Quiz Game!")
-    print("1) Start Game")
-    print("2) Exit")
-    choice = input("Enter your choice: ")
+    st.title("🎯 Quiz Game")
+    st.write("Test your knowledge with this fun quiz!")
 
-    if choice == "1":
-        quiz_game()
-    elif choice == "2":
-        print("Goodbye!")
+    if "question_index" not in st.session_state:
+        st.session_state.question_index = 0
+        st.session_state.score = 0
+        st.session_state.quiz_started = False
+
+    if not st.session_state.quiz_started:
+        if st.button("Start Quiz"):
+            st.session_state.quiz_started = True
+            st.rerun()
     else:
-        print("Invalid choice. Please try again.")
+        index = st.session_state.question_index
+        if index < len(questions):
+            st.subheader(f"Question {index + 1}: {questions[index]}")
+            user_choice = st.radio("Choose an answer:", choices[index])
+            if st.button("Submit Answer"):
+                if user_choice == answers[index]:
+                    st.session_state.score += 1
+                    st.success("✅ Correct!")
+                else:
+                    st.error(f"❌ Wrong! The correct answer was {answers[index]}")
+                st.session_state.question_index += 1
+                st.rerun()
+        else:
+            st.subheader("Game Over!")
+            st.write(f"Your final score is {st.session_state.score}/{len(questions)}")
+            if st.button("Play Again"):
+                st.session_state.question_index = 0
+                st.session_state.score = 0
+                st.session_state.quiz_started = False
+                st.rerun()
 
 
 if __name__ == "__main__":
